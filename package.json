@@ -4,7 +4,7 @@
   "description": "",
   "main": "build/app.js",
   "scripts": {
-    "copy-files": "mkdir -p ./build/views && cp ./src/views/* ./build/views",
+    "copy-files": "rm -rf ./build/views && mkdir ./build/views && cp -R ./src/views/* ./build/views",
     "start": "nodemon --watch ./src --ext ts,html,ejs --exec \"tsc && npm run copy-files && node ./build/app.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
