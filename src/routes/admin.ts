@@ -1,31 +1,12 @@
 import express, { Request } from "express";
-import path from "path";
-import { ROOT_PATH } from "../utils/path";
+import { getAddProduct, postAddProduct } from "../controllers/products";
 
 const router = express.Router();
-
-interface ProductDetails {
-  title: string;
-  price: number;
-  description: string;
-}
-export const productData: ProductDetails[] = [
-  {
-    title: "A Great Book",
-    price: 19.99,
-    description:
-      "A very interesting book about so many even more interesting things!",
-  },
-];
 
 /**
  * Return .ejs rendered using template engine
  */
-router.get("/add-product", (req, res) => {
-  res.render("add-product", {
-    productData,
-  });
-});
+router.get("/add-product", getAddProduct);
 
 /**
  * Return .html defined as a file somewhere else
@@ -49,9 +30,6 @@ router.get("/add-product", (req, res) => {
 //   );
 // });
 
-router.post("/add-product", (req: Request<{}, any, ProductDetails>, res) => {
-  productData.push(req.body);
-  res.redirect("/admin/add-product");
-});
+router.post("/add-product", postAddProduct);
 
 export default router;

@@ -1,12 +1,8 @@
 import express from "express";
-import { productData } from "./admin";
+import { getProducts } from "../controllers/products";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.render("shop", {
-    productData,
-  });
-});
+router.get("/", getProducts);
 
 export default router;
