@@ -1,3 +1,9 @@
+import fs from "fs";
+import path from "path";
+import { ROOT_PATH } from "../utils/path";
+
+const PRODUCT_FILE_PATH = path.join(ROOT_PATH, "..", "data", "products.json");
+
 interface IProduct {
   title: string;
   price: number;
@@ -18,20 +24,25 @@ class Product implements IProduct {
   }
 
   save(): void {
-    products.push(this);
+    fetchAllProductsFromFile((products) => {
+      const newProducts = [...products, this];
+      fs.writeFile(PRODUCT_FILE_PATH, JSON.stringify(newProducts), () => {});
+    });
   }
 
-  static fetchAllProducts() {
-    return products;
+  static fetchAllProducts(callback: (products: Product[]) => void) {
+    fetchAllProductsFromFile(callback);
   }
 }
 
-const products: Product[] = [
-  new Product(
-    "A Great Book",
-    19.99,
-    "A very interesting book about so many even more interesting things!"
-  ),
-];
+const fetchAllProductsFromFile = (callback: (products: Product[]) => void) => {
+  fs.readFile(PRODUCT_FILE_PATH, (err, fileContent) => {
+    if (err) {
+      callback([]);
+    } else {
+      callback(JSON.parse(fileContent.toString()));
+    }
+  });
+};
 
 export default Product;

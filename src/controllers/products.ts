@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import Product from "../models/product";
 
 export const getAddProduct = (req: Request, res: Response) => {
-  res.render("add-product", {
-    productData: Product.fetchAllProducts(),
+  Product.fetchAllProducts((products) => {
+    res.render("add-product", {
+      productData: products,
+    });
   });
 };
 
@@ -21,7 +23,9 @@ export const postAddProduct = (
 };
 
 export const getProducts = (req: Request, res: Response) => {
-  res.render("shop", {
-    productData: Product.fetchAllProducts(),
+  Product.fetchAllProducts((products) => {
+    res.render("shop", {
+      productData: products,
+    });
   });
 };
