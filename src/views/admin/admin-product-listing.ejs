@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../includes/head') %>
+    <link rel="stylesheet" href="/css/product.css" />
+  </head>
+
+  <body>
+    <%- include('../includes/header') %>
+
+    <main>
+      <% if(productData.length > 0) { %>
+      <div class="grid">
+        <% for(var i = 0; i < productData.length; i++) { %>
+        <article class="card product-item">
+          <header class="card__header">
+            <h1 class="product__title"><%= productData[i].title %></h1>
+          </header>
+          <div class="card__image">
+            <img
+              src="https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png"
+              alt="A Book"
+            />
+          </div>
+          <div class="card__content">
+            <h2 class="product__price">$<%= productData[i].price %></h2>
+            <p class="product__description">
+              <%= productData[i].description %>
+            </p>
+          </div>
+          <div class="card__actions">
+            <a class="btn" href="/products/<%= productData[i].id %>">Details</a>
+            <a class="btn" href="/admin/edit-product/<%= productData[i].id %>">
+              Edit
+            </a>
+          </div>
+        </article>
+        <% } %>
+      </div>
+      <% } %> <% if (productData.length === 0) { %>
+      <h1>No product yet!!!</h1>
+      <% } %>
+    </main>
+  </body>
+
+  <%- include('../includes/end') %>
+</html>

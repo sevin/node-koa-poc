@@ -8,17 +8,21 @@ interface IProduct {
   description: string;
 
   save: () => void;
-  edit: (newProductDetails: Product) => void;
 }
 
 class Product implements IProduct {
-  id: string;
+  id: string | null;
   title: string;
   price: number;
   description: string;
 
-  constructor(title: string, price: number, description: string) {
-    this.id = uuidv4();
+  constructor(
+    id: string | null,
+    title: string,
+    price: number,
+    description: string
+  ) {
+    this.id = id;
     this.title = title;
     this.price = price;
     this.description = description;
@@ -26,18 +30,19 @@ class Product implements IProduct {
 
   save(): void {
     fetchAllProductsFromFile((products) => {
-      products.push(this);
-      fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
-    });
-  }
+      if (this.id) {
+        // there's id, hence it's an update
+        const editProductIndex = products.findIndex(
+          (product) => product.id === this.id
+        );
+        products.splice(editProductIndex, 1, this);
+      } else {
+        // else generate random id and add to product list
+        this.id = uuidv4();
+        products.push(this);
+      }
 
-  edit(newProductDetails: Product) {
-    fetchAllProductsFromFile((products) => {
-      const editProductIndex = products.findIndex(
-        (product) => product.id === newProductDetails.id
-      );
-      products.splice(editProductIndex, 1, newProductDetails);
-      fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
+      saveAllProductsToFile(products);
     });
   }
 
@@ -64,6 +69,10 @@ const fetchAllProductsFromFile = (callback: (products: Product[]) => void) => {
       callback(JSON.parse(fileContent.toString()));
     }
   });
+};
+
+const saveAllProductsToFile = (products: Product[]) => {
+  fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
 };
 
 export default Product;
