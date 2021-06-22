@@ -1,5 +1,9 @@
 import express, { Request } from "express";
-import { getAddProduct, postAddProduct } from "../controllers/products";
+import {
+  getAddProduct,
+  getEditProduct,
+  postAddProduct,
+} from "../controllers/admin";
 
 const router = express.Router();
 
@@ -31,5 +35,6 @@ router.get("/add-product", getAddProduct);
 // });
 
 router.post("/add-product", postAddProduct);
+router.get("/edit-product", getEditProduct);
 
 export default router;

@@ -23,7 +23,7 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use((req, res) => {
-  res.status(404).render("404");
+  res.status(404).render("error/404", { path: null });
 });
 
 app.listen(3000);

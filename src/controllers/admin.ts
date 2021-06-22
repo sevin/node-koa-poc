@@ -1,13 +1,25 @@
 import { Request, Response } from "express";
 import Product from "../models/product";
 
+/**
+ * Get page for admin to add product
+ * @param req
+ * @param res
+ */
+
 export const getAddProduct = (req: Request, res: Response) => {
   Product.fetchAllProducts((products) => {
-    res.render("add-product", {
+    res.render("admin/add-product", {
       productData: products,
+      path: req.originalUrl,
     });
   });
 };
+/**
+ * API to add a product to storage
+ * @param req
+ * @param res
+ */
 
 export const postAddProduct = (
   req: Request<{}, any, Product>,
@@ -22,10 +34,8 @@ export const postAddProduct = (
   res.redirect("/admin/add-product");
 };
 
-export const getProducts = (req: Request, res: Response) => {
-  Product.fetchAllProducts((products) => {
-    res.render("shop", {
-      productData: products,
-    });
+export const getEditProduct = (req: Request, res: Response) => {
+  res.render("admin/edit-product", {
+    path: req.originalUrl,
   });
 };

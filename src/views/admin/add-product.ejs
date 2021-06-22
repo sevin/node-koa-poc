@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('includes/head') %>
+    <%- include('../includes/head') %>
     <link rel="stylesheet" href="/css/forms.css" />
     <link rel="stylesheet" href="/css/product.css" />
   </head>
 
   <body>
-    <%- include('includes/header') %>
+    <%- include('../includes/header') %>
 
     <main>
       <form class="product-form" action="/admin/add-product" method="POST">
@@ -41,4 +41,6 @@
       </table>
     </main>
   </body>
+
+  <%- include('../includes/end') %>
 </html>

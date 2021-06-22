@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('includes/head') %>
+    <%- include('../includes/head') %>
     <link rel="stylesheet" href="/css/product.css" />
   </head>
 
   <body>
-    <%- include('includes/header') %>
+    <%- include('../includes/header') %>
 
     <main>
-      <h1>Available products</h1>
+      <% if(productData.length > 0) { %>
       <div class="grid">
         <% for(var i = 0; i < productData.length; i++) { %>
         <article class="card product-item">
@@ -29,11 +29,17 @@
             </p>
           </div>
           <div class="card__actions">
-            <button class="btn">Add to Cart</button>
+            <a class="btn" href="/products/<%= productData[i].id %>">Details</a>
+            <%- include('../includes/add-to-cart', {product: productData[i]}) %>
           </div>
         </article>
         <% } %>
       </div>
+      <% } %> <% if (productData.length === 0) { %>
+      <h1>No product yet!!!</h1>
+      <% } %>
     </main>
   </body>
+
+  <%- include('../includes/end') %>
 </html>

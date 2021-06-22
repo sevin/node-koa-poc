@@ -1,7 +1,1 @@
-[
-  {
-    "title": "A Great Book",
-    "price": 19.99,
-    "description": "A very interesting book about so many even more interesting things!"
-  }
-]
+[{"id":"c03ceba3-8e7f-451b-8be1-3588819792e0","title":"A Great Book","price":"19.99","description":"A very interesting book!"},{"id":"ce66ca75-48a1-4fde-8719-f96d47691543","title":"test","price":"123","description":"123"}]
