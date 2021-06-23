@@ -29,6 +29,7 @@ export const postAddProduct = (
   const product = new Product(
     null,
     req.body.title,
+    req.body.image,
     req.body.price,
     req.body.description
   );
@@ -71,6 +72,7 @@ export const postEditProduct = (
   const editProduct = new Product(
     req.body.id,
     req.body.title,
+    req.body.image,
     req.body.price,
     req.body.description
   );
@@ -78,4 +80,14 @@ export const postEditProduct = (
 
   // refresh to show latest available products
   res.redirect(`/admin/edit-product/${req.body.id}`);
+};
+
+export const postDeleteProduct = (
+  req: Request<any, any, { productId: string }>,
+  res: Response
+) => {
+  Product.delete(req.body.productId);
+
+  // refresh to show latest available products
+  res.redirect("/admin/products");
 };

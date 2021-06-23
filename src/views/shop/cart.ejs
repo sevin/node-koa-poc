@@ -8,17 +8,19 @@
   <body>
     <%- include('../includes/header') %>
 
-    <h1>Cart</h1>
-
     <main>
-      <main>
-        <% for(const product of cartProducts) { %>
-        <h1>Product ID: <%= product.id %></h1>
-        <% } %>
-        <hr />
+      <h1>Cart</h1>
+      <% for(const product of cartProducts) { %>
+      <h1>Product ID: <%= product.id %></h1>
+      <div>Quantity: <%= product.quantity %></div>
+      <form action="/cart-delete-product" method="POST">
+        <input type="hidden" name="productId" value="<%= product.id %>" />
+        <button class="btn">Delete</button>
+      </form>
+      <% } %>
+      <hr />
 
-        <p>Total Price: <%= totalPrice %></p>
-      </main>
+      <p>Total Price: <%= totalPrice %></p>
     </main>
   </body>
 

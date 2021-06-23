@@ -24,6 +24,14 @@
             value="<% if(editting) { %><%= product.title %><% } %>"
           />
 
+          <label for="image">Image</label>
+          <input
+            type="url"
+            name="image"
+            id="image"
+            value="<% if(editting) { %><%= product.image %><% } %>"
+          />
+
           <label for="price">Price</label>
           <input
             type="number"

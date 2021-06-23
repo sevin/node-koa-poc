@@ -2,8 +2,11 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 import { PRODUCTS_FILE_PATH } from "../utils/path";
+import Cart from "./cart";
 interface IProduct {
+  id: string | null;
   title: string;
+  image: string;
   price: number;
   description: string;
 
@@ -13,17 +16,20 @@ interface IProduct {
 class Product implements IProduct {
   id: string | null;
   title: string;
+  image: string;
   price: number;
   description: string;
 
   constructor(
     id: string | null,
     title: string,
+    image: string,
     price: number,
     description: string
   ) {
     this.id = id;
     this.title = title;
+    this.image = image;
     this.price = price;
     this.description = description;
   }
@@ -44,6 +50,16 @@ class Product implements IProduct {
 
       saveAllProductsToFile(products);
     });
+  }
+
+  static delete(productId: string): void {
+    fetchAllProductsFromFile((products) => {
+      const newProducts = products.filter(
+        (product) => product.id !== productId
+      );
+      saveAllProductsToFile(newProducts);
+    });
+    Cart.deleteProduct(productId);
   }
 
   static fetchAllProducts(callback: (products: Product[]) => void) {

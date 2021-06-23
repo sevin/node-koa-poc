@@ -3,6 +3,7 @@ import { CART_FILE_PATH } from "../utils/path";
 
 interface CartProduct {
   id: string;
+  price: number;
   quantity: number;
 }
 
@@ -38,7 +39,7 @@ class Cart {
         (cartProduct) => cartProduct.id === productId
       );
       if (existingCartProductIndex === -1) {
-        newCartProducts.push({ id: productId, quantity: 1 });
+        newCartProducts.push({ id: productId, price: +price, quantity: 1 });
       } else {
         newCartProducts[existingCartProductIndex].quantity =
           newCartProducts[existingCartProductIndex].quantity + 1;
@@ -51,9 +52,9 @@ class Cart {
     });
   }
 
-  static removeProduct(productId: string, price: number): void {
+  static decreaseProductQuantity(productId: string): void {
     fetchCartFromFile((cart) => {
-      const newTotalPrice = cart.totalPrice - +price;
+      let newTotalPrice = cart.totalPrice;
       const newCartProducts = [...cart.cartProducts];
 
       const existingCartProductIndex = cart.cartProducts.findIndex(
@@ -62,14 +63,40 @@ class Cart {
       if (existingCartProductIndex === -1) {
         throw new Error("Product does not exist in cart, hence cannot remove.");
       } else {
-        const cartProductQuantity =
-          newCartProducts[existingCartProductIndex].quantity;
-        if (cartProductQuantity > 1) {
+        const existingCartProduct = cart.cartProducts[existingCartProductIndex];
+
+        newTotalPrice -= existingCartProduct.price;
+
+        if (existingCartProduct.quantity > 1) {
           newCartProducts[existingCartProductIndex].quantity =
-            cartProductQuantity - 1;
+            existingCartProduct.quantity - 1;
         } else {
           newCartProducts.splice(existingCartProductIndex, 1);
         }
+      }
+
+      writeCartToFile({
+        cartProducts: newCartProducts,
+        totalPrice: newTotalPrice,
+      });
+    });
+  }
+
+  static deleteProduct(productId: string): void {
+    fetchCartFromFile((cart) => {
+      let newTotalPrice = cart.totalPrice;
+      const newCartProducts = [...cart.cartProducts];
+
+      const existingCartProductIndex = cart.cartProducts.findIndex(
+        (cartProduct) => cartProduct.id === productId
+      );
+      if (existingCartProductIndex === -1) {
+        // do nothing or throw error
+        // throw new Error("Product does not exist in cart, hence cannot remove.");
+      } else {
+        const cartProduct = cart.cartProducts[existingCartProductIndex];
+        newTotalPrice -= cartProduct.quantity * cartProduct.price;
+        newCartProducts.splice(existingCartProductIndex, 1);
       }
 
       writeCartToFile({
