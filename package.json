@@ -6,7 +6,7 @@
   "scripts": {
     "copy-views": "rm -rf ./build/views && mkdir ./build/views && cp -R ./src/views/* ./build/views",
     "copy-files": "npm run copy-views",
-    "start": "nodemon --watch ./src --ext ts,html,ejs --exec \"tsc && npm run copy-files && node ./build/app.js\"",
+    "start": "nodemon --watch ./src --ext ts,html,ejs --exec \"tsc && npm run copy-files && node -r source-map-support/register ./build/app.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Lai Sevin",
@@ -16,6 +16,7 @@
     "@types/node": "^15.12.2",
     "@types/uuid": "^8.3.0",
     "nodemon": "^2.0.7",
+    "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
   },
