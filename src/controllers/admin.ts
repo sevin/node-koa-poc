@@ -29,7 +29,7 @@ export const postAddProduct = (
   const product = new Product(
     null,
     req.body.title,
-    req.body.image,
+    req.body.imageUrl,
     req.body.price,
     req.body.description
   );
@@ -72,7 +72,7 @@ export const postEditProduct = (
   const editProduct = new Product(
     req.body.id,
     req.body.title,
-    req.body.image,
+    req.body.imageUrl,
     req.body.price,
     req.body.description
   );

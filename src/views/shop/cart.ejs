@@ -15,7 +15,7 @@
       <div>Quantity: <%= product.quantity %></div>
       <form action="/cart-delete-product" method="POST">
         <input type="hidden" name="productId" value="<%= product.id %>" />
-        <button class="btn">Delete</button>
+        <button class="btn" type="submit">Delete</button>
       </form>
       <% } %>
       <hr />

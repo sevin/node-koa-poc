@@ -1,12 +1,11 @@
-import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
+import { RowDataPacket } from "mysql2";
+import { db } from "../utils/database";
 
-import { PRODUCTS_FILE_PATH } from "../utils/path";
 import Cart from "./cart";
 interface IProduct {
   id: string | null;
   title: string;
-  image: string;
+  imageUrl: string;
   price: number;
   description: string;
 
@@ -16,79 +15,77 @@ interface IProduct {
 class Product implements IProduct {
   id: string | null;
   title: string;
-  image: string;
+  imageUrl: string;
   price: number;
   description: string;
 
   constructor(
     id: string | null,
     title: string,
-    image: string,
+    imageUrl: string,
     price: number,
     description: string
   ) {
     this.id = id;
     this.title = title;
-    this.image = image;
+    this.imageUrl = imageUrl;
     this.price = price;
     this.description = description;
   }
 
   save(): void {
-    fetchAllProductsFromFile((products) => {
-      if (this.id) {
-        // there's id, hence it's an update
-        const editProductIndex = products.findIndex(
-          (product) => product.id === this.id
-        );
-        products.splice(editProductIndex, 1, this);
-      } else {
-        // else generate random id and add to product list
-        this.id = uuidv4();
-        products.push(this);
-      }
-
-      saveAllProductsToFile(products);
-    });
+    if (this.id) {
+      // there's id, hence it's an update
+      db.execute(
+        "UPDATE products SET title = ?, price = ?, description = ?, imageUrl = ? WHERE id = ?",
+        [this.title, this.price, this.description, this.imageUrl, this.id]
+      );
+    } else {
+      db.execute("INSERT INTO products VALUES (?,?,?,?,?)", [
+        null,
+        this.title,
+        this.price,
+        this.description,
+        this.imageUrl,
+      ]);
+    }
   }
 
   static delete(productId: string): void {
-    fetchAllProductsFromFile((products) => {
-      const newProducts = products.filter(
-        (product) => product.id !== productId
-      );
-      saveAllProductsToFile(newProducts);
-    });
+    db.execute("DELETE FROM products WHERE id = ?", [productId]);
     Cart.deleteProduct(productId);
   }
 
   static fetchAllProducts(callback: (products: Product[]) => void) {
-    fetchAllProductsFromFile(callback);
+    db.execute("SELECT * FROM products").then((queryResults) => {
+      callback(queryResults[0] as Product[]);
+    });
   }
 
   static findById(
     id: string,
     callback: (product: Product | undefined) => void
   ) {
-    fetchAllProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
-      callback(product);
-    });
+    db.execute<RowDataPacket[]>("SELECT * FROM products WHERE id = ?", [
+      id,
+    ]).then(([rows]) => callback(rows[0] as Product));
   }
 }
 
-const fetchAllProductsFromFile = (callback: (products: Product[]) => void) => {
-  fs.readFile(PRODUCTS_FILE_PATH, (err, fileContent) => {
-    if (err) {
-      callback([]);
-    } else {
-      callback(JSON.parse(fileContent.toString()));
-    }
-  });
-};
+// const fetchAllProductsFromFile = async (
+//   callback: (products: Product[]) => void
+// ) => {
+//   fs.readFile(PRODUCTS_FILE_PATH, (err, fileContent) => {
+//     if (err) {
+//       callback([]);
+//     } else {
+//       callback(JSON.parse(fileContent.toString()));
+//     }
+//   });
+// };
 
-const saveAllProductsToFile = (products: Product[]) => {
-  fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
-};
+// const saveAllProductsToFile = (products: Product[]) => {
+//   fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
+// };
 
 export default Product;
