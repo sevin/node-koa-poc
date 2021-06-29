@@ -8,6 +8,7 @@ import routes from "./routes";
 import adminRoutes from "./routes/admin";
 import shopRoutes from "./routes/shop";
 import { ROOT_PATH } from "./utils/path";
+import { sequelize } from "./utils/database";
 
 const app = express();
 
@@ -26,4 +27,6 @@ app.use((req, res) => {
   res.status(404).render("error/404", { path: null });
 });
 
-app.listen(3000);
+sequelize.sync().then(() => {
+  app.listen(3000);
+});

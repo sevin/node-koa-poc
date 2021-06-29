@@ -1,77 +1,122 @@
-import { RowDataPacket } from "mysql2";
-import { db } from "../utils/database";
+import { DataTypes, Model, Optional } from "sequelize";
+import { sequelize } from "../utils/database";
 
 import Cart from "./cart";
 interface IProduct {
-  id: string | null;
+  id: string;
   title: string;
   imageUrl: string;
   price: number;
   description: string;
-
-  save: () => void;
 }
 
-class Product implements IProduct {
-  id: string | null;
-  title: string;
-  imageUrl: string;
-  price: number;
-  description: string;
+interface IProductCreation extends Optional<IProduct, "id"> {}
 
-  constructor(
-    id: string | null,
-    title: string,
-    imageUrl: string,
-    price: number,
-    description: string
-  ) {
-    this.id = id;
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.price = price;
-    this.description = description;
-  }
+class Product extends Model<IProduct, IProductCreation> implements IProduct {
+  public id!: string;
+  public title!: string;
+  public imageUrl!: string;
+  public price!: number;
+  public description!: string;
 
-  save(): void {
-    if (this.id) {
-      // there's id, hence it's an update
-      db.execute(
-        "UPDATE products SET title = ?, price = ?, description = ?, imageUrl = ? WHERE id = ?",
-        [this.title, this.price, this.description, this.imageUrl, this.id]
-      );
-    } else {
-      db.execute("INSERT INTO products VALUES (?,?,?,?,?)", [
-        null,
-        this.title,
-        this.price,
-        this.description,
-        this.imageUrl,
-      ]);
-    }
-  }
+  // save(): void {
+  //   if (this.id) {
+  //     // there's id, hence it's an update
+  //     db.execute(
+  //       "UPDATE products SET title = ?, price = ?, description = ?, imageUrl = ? WHERE id = ?",
+  //       [this.title, this.price, this.description, this.imageUrl, this.id]
+  //     );
+  //   } else {
+  //     db.execute("INSERT INTO products VALUES (?,?,?,?,?)", [
+  //       null,
+  //       this.title,
+  //       this.price,
+  //       this.description,
+  //       this.imageUrl,
+  //     ]);
+  //   }
+  // }
 
   static delete(productId: string): void {
-    db.execute("DELETE FROM products WHERE id = ?", [productId]);
+    // db.execute("DELETE FROM products WHERE id = ?", [productId]);
+    Product.destroy({
+      where: {
+        id: productId,
+      },
+    });
     Cart.deleteProduct(productId);
   }
 
-  static fetchAllProducts(callback: (products: Product[]) => void) {
-    db.execute("SELECT * FROM products").then((queryResults) => {
-      callback(queryResults[0] as Product[]);
-    });
+  static async fetchAllProducts(callback: (products: Product[]) => void) {
+    const allProducts = await Product.findAll();
+
+    callback(allProducts);
   }
 
-  static findById(
+  static async findById(
     id: string,
-    callback: (product: Product | undefined) => void
+    callback: (product: Product | null) => void
   ) {
-    db.execute<RowDataPacket[]>("SELECT * FROM products WHERE id = ?", [
-      id,
-    ]).then(([rows]) => callback(rows[0] as Product));
+    const foundProduct = await Product.findOne({
+      where: {
+        id: id,
+      },
+    });
+    callback(foundProduct);
   }
 }
 
+Product.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false,
+      unique: true,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  { sequelize: sequelize }
+);
+
+/**
+ * Examples of creating a record at DB using sequelize
+ */
+// Product.create({
+//   title: "A Great Book",
+//   imageUrl:
+//     "https://images.unsplash.com/photo-1549122728-f519709caa9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=925&q=80",
+//   price: 19.99,
+//   description: "A very interesting book!",
+// });
+// Product.create({
+//   title: "Champagne",
+//   imageUrl:
+//     "https://cdn.pixabay.com/photo/2019/01/28/23/44/champagne-3961509_960_720.jpg",
+//   price: 999.99,
+//   description: "Very expensive!",
+// });
+
+/**
+ * Examples of saving data to file
+ */
+// import fs from 'fs';
 // const fetchAllProductsFromFile = async (
 //   callback: (products: Product[]) => void
 // ) => {
@@ -83,7 +128,6 @@ class Product implements IProduct {
 //     }
 //   });
 // };
-
 // const saveAllProductsToFile = (products: Product[]) => {
 //   fs.writeFile(PRODUCTS_FILE_PATH, JSON.stringify(products), () => {});
 // };

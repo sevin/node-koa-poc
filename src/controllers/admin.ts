@@ -26,14 +26,21 @@ export const postAddProduct = (
   req: Request<{}, any, Product>,
   res: Response
 ) => {
-  const product = new Product(
-    null,
-    req.body.title,
-    req.body.imageUrl,
-    req.body.price,
-    req.body.description
-  );
-  product.save();
+  // const product = new Product(
+  //   null,
+  //   req.body.title,
+  //   req.body.imageUrl,
+  //   req.body.price,
+  //   req.body.description
+  // );
+  // product.save();
+
+  Product.create({
+    title: req.body.title,
+    imageUrl: req.body.imageUrl,
+    price: req.body.price,
+    description: req.body.description,
+  });
 
   // refresh to show latest available products
   res.redirect("/admin/add-product");
@@ -52,13 +59,15 @@ export const getEditProduct = (
   req: Request<{ productId: string }>,
   res: Response
 ) => {
-  Product.fetchAllProducts((products) => {
-    const editProduct = products.find(
-      (product) => product.id === req.params.productId
-    );
+  Product.fetchAllProducts(async (products) => {
+    const foundProduct = await Product.findOne({
+      where: {
+        id: req.params.productId,
+      },
+    });
     res.render("admin/edit-product", {
       editting: true,
-      product: editProduct,
+      product: foundProduct,
       productData: products,
       path: req.originalUrl,
     });
@@ -69,14 +78,28 @@ export const postEditProduct = (
   req: Request<any, any, Product>,
   res: Response
 ) => {
-  const editProduct = new Product(
-    req.body.id,
-    req.body.title,
-    req.body.imageUrl,
-    req.body.price,
-    req.body.description
+  Product.update(
+    {
+      title: req.body.title,
+      imageUrl: req.body.imageUrl,
+      price: req.body.price,
+      description: req.body.description,
+    },
+    {
+      where: {
+        id: req.body.id,
+      },
+    }
   );
-  editProduct.save();
+  // const editProduct = new Product(
+  //   req.body.id,
+  //   req.body.title,
+  //   req.body.imageUrl,
+  //   req.body.price,
+  //   req.body.description
+  // );
+
+  // editProduct.save();
 
   // refresh to show latest available products
   res.redirect(`/admin/edit-product/${req.body.id}`);

@@ -7,6 +7,7 @@
     "copy-views": "rm -rf ./build/views && mkdir ./build/views && cp -R ./src/views/* ./build/views",
     "copy-files": "npm run copy-views",
     "start": "nodemon --watch ./src --ext ts,html,ejs --exec \"tsc && npm run copy-files && node -r source-map-support/register ./build/app.js\"",
+    "init-db": "node_modules/.bin/sequelize db:migrate && node_modules/.bin/sequelize db:seed:all",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Lai Sevin",
@@ -15,7 +16,9 @@
     "@types/express": "^4.17.12",
     "@types/node": "^15.12.2",
     "@types/uuid": "^8.3.0",
+    "@types/validator": "^13.1.4",
     "nodemon": "^2.0.7",
+    "sequelize-cli": "^6.2.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
@@ -25,6 +28,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "mysql2": "^2.2.5",
+    "sequelize": "^6.6.4",
     "uuid": "^8.3.2"
   }
 }

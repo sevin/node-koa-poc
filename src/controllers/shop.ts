@@ -25,15 +25,18 @@ export const getProducts = (req: Request, res: Response) => {
   });
 };
 
-export const getProduct = (
+export const getProduct = async (
   req: Request<{ productId: string }>,
   res: Response
 ) => {
-  Product.findById(req.params.productId, (product) => {
-    res.render("shop/product-detail", {
-      product,
-      path: "/products",
-    });
+  const foundProduct = await Product.findOne({
+    where: {
+      id: req.params.productId,
+    },
+  });
+  res.render("shop/product-detail", {
+    product: foundProduct,
+    path: "/products",
   });
 };
 
